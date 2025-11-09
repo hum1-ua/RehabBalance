@@ -2,16 +2,8 @@ import cv2
 import numpy as np
 import mediapipe as mp
 
-
 mp_pose = mp.solutions.pose
 mp_drawing = mp.solutions.drawing_utils
-
-
-def init_pose(model_complexity=1, min_detection_confidence=0.5, min_tracking_confidence=0.5):
-
-    return mp_pose.Pose(model_complexity = model_complexity,
-                        min_detection_confidence = min_detection_confidence,
-                        min_tracking_confidence = min_tracking_confidence)
 
 
 def get_landmarks(frame, pose, draw=True):
@@ -27,4 +19,37 @@ def get_landmarks(frame, pose, draw=True):
                                       mp_drawing.DrawingSpec(color=(255,0,0), thickness=2, circle_radius=2))
     return frame, landmarks
 
+
+def landmark_to_xy(landmark, frame):
+    
+    h, w = frame.shape[:2]
+    return int(landmark.x * w), int(landmark.y * h)
+
+
+def calculate_angle(a, b, c):
+    """
+    Calcula el ángulo en grados formado por los puntos a-b-c (cada uno [x, y]).
+    Uso: a = hip, b = knee, c = ankle => ángulo de la rodilla.
+    """
+    a = np.array(a)
+    b = np.array(b)
+    c = np.array(c)
+
+    # vectores BA y BC
+    ba = a - b
+    bc = c - b
+
+    # protección contra división por cero
+    norm_ba = np.linalg.norm(ba)
+    norm_bc = np.linalg.norm(bc)
+    if norm_ba == 0 or norm_bc == 0:
+        return None
+
+    cos_angle = np.dot(ba, bc) / (norm_ba * norm_bc)
+    # recortar por imprecisiones numéricas
+    cos_angle = np.clip(cos_angle, -1.0, 1.0)
+    angle_rad = np.arccos(cos_angle)
+    angle_deg = np.degrees(angle_rad)
+
+    return float(angle_deg)
 
