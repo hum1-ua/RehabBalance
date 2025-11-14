@@ -17,39 +17,10 @@ def get_landmarks(frame, pose, draw=True):
             mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
                                       mp_drawing.DrawingSpec(color=(0,255,0), thickness=2, circle_radius=2),
                                       mp_drawing.DrawingSpec(color=(255,0,0), thickness=2, circle_radius=2))
-    return frame, landmarks
+    return landmarks
 
 
-def landmark_to_xy(landmark, frame):
+def landmark_to_y(landmark, frame):
     
-    h, w = frame.shape[:2]
-    return int(landmark.x * w), int(landmark.y * h)
-
-
-def calculate_angle(a, b, c):
-    """
-    Calcula el ángulo en grados formado por los puntos a-b-c (cada uno [x, y]).
-    Uso: a = hip, b = knee, c = ankle => ángulo de la rodilla.
-    """
-    a = np.array(a)
-    b = np.array(b)
-    c = np.array(c)
-
-    # vectores BA y BC
-    ba = a - b
-    bc = c - b
-
-    # protección contra división por cero
-    norm_ba = np.linalg.norm(ba)
-    norm_bc = np.linalg.norm(bc)
-    if norm_ba == 0 or norm_bc == 0:
-        return None
-
-    cos_angle = np.dot(ba, bc) / (norm_ba * norm_bc)
-    # recortar por imprecisiones numéricas
-    cos_angle = np.clip(cos_angle, -1.0, 1.0)
-    angle_rad = np.arccos(cos_angle)
-    angle_deg = np.degrees(angle_rad)
-
-    return float(angle_deg)
-
+    h, _ = frame.shape[:2]
+    return  int(landmark.y * h)
