@@ -19,7 +19,7 @@ def main():
     phase = 0
     start_time = None
 
-    left_baseline = right_baseline = None
+    left_baseline = right_baseline = None  #punto de referencia para calcular la altura del salto
     left_y_values = []
     right_y_values = []
     left_jump = right_jump = None
@@ -40,9 +40,9 @@ def main():
         landmarks = get_landmarks(frame, pose, draw=True)
 
         if landmarks:
-
-            # coordenadas limpias
-            left_ankle = landmark_to_y(landmarks[mp_pose.PoseLandmark.LEFT_ANKLE], frame)
+            
+            #obtenemos la componente y de los tobillos
+            left_ankle = landmark_to_y(landmarks[mp_pose.PoseLandmark.LEFT_ANKLE], frame)  #se pone al revés debido a la inversión del frame con cv2.flip()
             right_ankle = landmark_to_y(landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE], frame)
 
             ############# FASE 0 — CALIBRACIÓN #############
@@ -54,16 +54,18 @@ def main():
 
                 elapsed = time.time() - start_time
 
-                left_y_values.append(left_ankle)
-                right_y_values.append(right_ankle)
-
                 if elapsed <= 10:
-                    msg = "Mantente quieto para calibrar..."
-                elif 10 < elapsed <= 15:
+                    msg = "Pongase en posicion"
+                elif 10 < elapsed <= 20:
+                    left_y_values.append(left_ankle)
+                    right_y_values.append(right_ankle)
+                    msg = "Quedese quieto. Calibrando..."
+                    
+                elif 20 < elapsed <= 25:
                     if left_baseline is None:
                         left_baseline = np.mean(left_y_values)
                         right_baseline = np.mean(right_y_values)
-                    msg = "Calibracion completada. Preparate..."
+                        msg = "Calibracion completada. Preparate..."
                 else:
                     phase = 1
                     start_time = None
@@ -85,7 +87,7 @@ def main():
                 elif time.time() - start_time > 6:
                     left_jump = detect_jump_height(left_y_values, left_baseline)
 
-                    if left_jump > 20:
+                    if left_jump > 20:  #umbral para asegurarnos que el usuario salta de verdad
                         print(f"Altura salto izquierdo: {left_jump:.2f}")
                         phase = 2
                         start_time = None
