@@ -2,7 +2,7 @@ import cv2
 
 def draw_feedback(frame, diff):
     if abs(diff) < 10:
-        text = "Equilibrio perfecto"
+        text = "Sin descompensaciones significativas"
         color = (0, 255, 0)
     elif diff > 0:
         text = "Pierna izquierda mas fuerte"

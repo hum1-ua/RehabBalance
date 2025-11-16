@@ -3,7 +3,6 @@ import time
 import numpy as np
 import mediapipe as mp
 
-from utils.pose_utils import get_landmarks, landmark_to_y
 from utils.jump_analysis import detect_jump_height
 from utils.feedback import draw_feedback
 from utils.session_manager import save_session
@@ -17,6 +16,8 @@ def main():
     VisionRunningMode = mp.tasks.vision.RunningMode
 
     MODEL_PATH = "models/pose_landmarker_full.task"
+
+    flag = False
 
     options = PoseLandmarkerOptions(
         base_options=BaseOptions(model_asset_path=MODEL_PATH),
@@ -46,7 +47,7 @@ def main():
         cv2.setWindowProperty("FullScreen", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
         while True:
-
+           
             ret, frame = cap.read()
             if not ret:
                 break
@@ -84,12 +85,13 @@ def main():
 
 
                 #obtenemos la componente y de los tobillos
-                left_ankle = landmark_to_y(lm[28], frame)  #el 28 corresponde al derecho, pero se pone al revés debido a la inversión del frame con cv2.flip()
-                right_ankle = landmark_to_y(lm[27], frame)
+
+                left_ankle = int(lm[28].y * h)  #el 28 corresponde al derecho, pero se pone al revés debido a la inversión del frame con cv2.flip()
+                right_ankle = int(lm[27].y * h)
 
                 ############# FASE 0 — CALIBRACIÓN #############
                 if phase == 0:
-
+                    
                     if start_time is None:
                         start_time = time.time()
                         left_y_values, right_y_values = [], []
@@ -182,12 +184,9 @@ def main():
                     cv2.putText(frame, "Pulsa R para reiniciar o ESC para salir",
                                 (30, 140), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,255), 1)
 
-                    # Espera visible real (sin parpadeo)
-                    if start_time is None:
-                        start_time = time.time()
-
-                    if time.time() - start_time > 4:
+                    if not flag:
                         save_session(left_jump, right_jump, diff)
+                        flag = True
 
             # Mostrar frame
             cv2.imshow("FullScreen", frame)
