@@ -27,3 +27,21 @@ source venv/bin/activate
 python -m venv venv
 venv\Scripts\activate
 ```
+
+2. Instalar dependencias
+
+```bash
+pip install -r requirements.txt
+```
+
+3. Descargar modelos
+
+```bash
+python download_models.py
+```
+
+4. Ejecutar la aplicación
+
+```bash
+python main.py
+```
