@@ -20,7 +20,9 @@ Esta aplicación permite medir la altura de los saltos con cada pierna usando la
 # Linux / Mac
 python3 -m venv venv
 source venv/bin/activate
+```
 
+```bash
 # Windows
 python -m venv venv
 venv\Scripts\activate
