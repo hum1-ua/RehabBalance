@@ -1,5 +1,3 @@
-import cv2
-import numpy as np
 
 def overlay_png(frame, png, x, y):
     h, w = png.shape[:2]
