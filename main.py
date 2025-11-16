@@ -6,7 +6,7 @@ import mediapipe as mp
 from utils.jump_analysis import detect_jump_height
 from utils.feedback import draw_feedback
 from utils.session_manager import save_session
-
+from utils.log import overlay_png
 
 def main():
 
@@ -43,6 +43,16 @@ def main():
         right_y_values = []
         left_jump = right_jump = None
 
+        # Cargar tronco
+        scale=0.4
+        tronco = cv2.imread("log.png", cv2.IMREAD_UNCHANGED)
+        tronco = cv2.resize(tronco, (0, 0), fx=scale, fy=scale)
+        tronco_h, tronco_w = tronco.shape[:2]
+
+        # Variables del tronco
+        log_x = -tronco_w
+        log_speed = 20
+        
         cv2.namedWindow("FullScreen", cv2.WND_PROP_FULLSCREEN)
         cv2.setWindowProperty("FullScreen", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
@@ -53,7 +63,7 @@ def main():
                 break
 
             frame = cv2.flip(frame, 1)
-            
+            log_y = frame.shape[0] - tronco_h
             # Convertir frame a formato MediaPipe
             mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
 
@@ -124,6 +134,15 @@ def main():
 
                     left_y_values.append(left_ankle)
 
+                    log_x += log_speed
+
+                    # Si se sale, volver al inicio
+                    if log_x > frame.shape[1]:
+                        log_x = -tronco_w
+
+                    # Pintar PNG en el frame
+                    frame = overlay_png(frame, tronco, log_x, log_y)
+
                     if start_time is None:
                         start_time = time.time()
 
@@ -157,12 +176,22 @@ def main():
                     cv2.putText(frame, "Salta con la pierna DERECHA!", (30, 50),
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,255), 2)
 
-                    right_y_values.append(right_ankle)
-
                     if start_time is None:
                         start_time = time.time()
+                        log_x = -tronco_w
 
-                    elif time.time() - start_time > 6:
+                    right_y_values.append(right_ankle)
+
+                    log_x += log_speed
+
+                    # Si se sale, volver al inicio
+                    if log_x > frame.shape[1]:
+                        log_x = -tronco_w
+
+                    # Pintar PNG en el frame
+                    frame = overlay_png(frame, tronco, log_x, log_y)
+
+                    if time.time() - start_time > 6:
                         right_jump = detect_jump_height(right_y_values, right_baseline)
 
                         if right_jump > 20:
