@@ -1,4 +1,4 @@
-# 🏃‍♂️ Jump Analyzer — App de saltos con MediaPipe y OpenCV
+# Jump Analyzer — App de saltos con MediaPipe y OpenCV
 
 Esta aplicación permite medir la altura de los saltos con cada pierna usando la webcam y proporciona feedback visual en tiempo real.
 
