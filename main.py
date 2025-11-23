@@ -4,7 +4,6 @@ import numpy as np
 import mediapipe as mp
 
 from utils.jump_analysis import detect_jump_height
-from utils.feedback import draw_feedback
 from utils.session_manager import save_session
 from utils.log import overlay_png
 
@@ -44,7 +43,7 @@ def main():
         left_jump = right_jump = None
 
         # Cargar tronco
-        scale=0.4
+        scale=0.25
         tronco = cv2.imread("log.png", cv2.IMREAD_UNCHANGED)
         tronco = cv2.resize(tronco, (0, 0), fx=scale, fy=scale)
         tronco_h, tronco_w = tronco.shape[:2]
@@ -205,15 +204,37 @@ def main():
                 ############# FASE 4 — FEEDBACK FINAL #############
                 elif phase == 4:
 
-                    diff = left_jump - right_jump
-                    frame = draw_feedback(frame, diff)
+                    # Calculo del porcentaje de asimetría
+                    asymmetry = abs(left_jump - right_jump) / max(left_jump, right_jump) * 100
 
-                    cv2.putText(frame, f"Izq: {left_jump:.1f}px | Der: {right_jump:.1f}px",
-                                (30, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,255), 2)
+                    # Mostrar alturas
+                    cv2.putText(frame, f"Salto IZQ: {left_jump:.1f}px", 
+                                (30, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,255), 2)
+
+                    cv2.putText(frame, f"Salto DER: {right_jump:.1f}px", 
+                                (30, 110), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,255), 2)
+
+                    # Mostrar diferencia porcentual
+                    cv2.putText(frame, f"Diferencia: {asymmetry:.1f}%", 
+                                (30, 160), cv2.FONT_HERSHEY_SIMPLEX, 1, 
+                                (0,255,0) if asymmetry < 10 else (0,0,255), 2)
+
+                    # Mensaje de riesgo
+                    if asymmetry < 10:
+                        risk_msg = "NO hay riesgo (asimetria < 10%)"
+                        color = (0, 255, 0)
+                    else:
+                        risk_msg = "SI hay riesgo (asimetria > 10%)"
+                        color = (0, 0, 255)
+
+                    cv2.putText(frame, risk_msg, 
+                                (30, 210), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
+
                     cv2.putText(frame, "Pulsa R para reiniciar o ESC para salir",
-                                (30, 140), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,255), 1)
+                                (30, 260), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255,255,255), 1)
 
                     if not flag:
+                        diff = left_jump - right_jump
                         save_session(left_jump, right_jump, diff)
                         flag = True
 
