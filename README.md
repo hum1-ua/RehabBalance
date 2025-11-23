@@ -1,7 +1,7 @@
 # Jump Analyzer — App de saltos con MediaPipe y OpenCV
 
 Esta aplicación permite medir la altura de los saltos con cada pierna usando la webcam y proporciona feedback visual en tiempo real.
-
+Software destinado a pacientes en proceso de readaptación deportiva tras sufrir cualquier lesión de rodilla, ya que muchos estudios comprobaron que la presencia de asimetrías y descompensaciones de fuerza entre la pierna sana y la lesionada supone un factor de riesgo importante de cara a una posible recaída.
 ---
 
 ## Requisitos
