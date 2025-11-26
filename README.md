@@ -1,4 +1,4 @@
-# Jump Analyzer — App de saltos con MediaPipe y OpenCV
+# Jump Analyzer — Evaluación de simetría de Salto con MediaPipe
 
 Jump Analyzer es una aplicación en Python que mide la altura de salto de cada pierna mediante visión por computador (MediaPipe + OpenCV), permitiendo detectar asimetrías tras lesiones de rodilla (LCA, menisco, etc.).
 El objetivo es ofrecer una herramienta sencilla para valorar la fuerza, simetría y riesgo de compensación, claves para un retorno seguro al deporte.
@@ -63,7 +63,7 @@ python main.py
 ```
 ---
 
-# Interpretación de resultados
+## Interpretación de resultados
 
 La app muestra:
 
@@ -75,6 +75,5 @@ La app muestra:
 
 Evaluación del riesgo:
 
-Diferencia	Interpretación
-< 10%	Simetría adecuada, sin riesgo significativo
-≥ 10%	Riesgo de compensación — seguir trabajando la pierna débil
+Si la diferencia es menor al 10% se considera que no hay un riesgo significativo.
+De lo contrario, existe riesgo de compensación y convendría seguir trabajando la pierna débil
