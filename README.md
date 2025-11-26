@@ -1,7 +1,34 @@
 # Jump Analyzer — App de saltos con MediaPipe y OpenCV
 
-Esta aplicación permite medir la altura de los saltos con cada pierna usando la webcam y proporciona feedback visual en tiempo real.
-Software destinado a pacientes en proceso de readaptación deportiva tras sufrir cualquier lesión de rodilla, ya que muchos estudios comprobaron que la presencia de asimetrías y descompensaciones de fuerza entre la pierna sana y la lesionada supone un factor de riesgo importante de cara a una posible recaída.
+Jump Analyzer es una aplicación en Python que mide la altura de salto de cada pierna mediante visión por computador (MediaPipe + OpenCV), permitiendo detectar asimetrías tras lesiones de rodilla (LCA, menisco, etc.).
+El objetivo es ofrecer una herramienta sencilla para valorar la fuerza, simetría y riesgo de compensación, claves para un retorno seguro al deporte.
+---
+## Características principales
+
+- Detección de pose en tiempo real con MediaPipe Tasks.
+
+- Calibración automática de altura base de cada tobillo.
+
+- Medición real de altura de salto con pierna izquierda y derecha.
+
+- Cálculo de asimetría porcentual entre extremidades.
+
+- Evaluación de riesgo de compensación (umbral: 10%).
+
+- Feedback visual inmediato en pantalla.
+
+- Guardado automático de resultados en CSV (una línea por sesión).
+---
+
+## Motivación
+
+- Tras cirugías de rodilla es común presentar déficits de fuerza y asimetrías funcionales.
+
+- Las compensaciones durante el salto están asociadas a un mayor riesgo de rerrotura (hasta ~20%).
+
+- La simetría de salto es una métrica muy utilizada en readaptación deportiva.
+
+- Jump Analyzer permite obtener esta información solo con una webcam, de forma rápida y accesible.
 ---
 
 ## Requisitos
@@ -12,36 +39,42 @@ Software destinado a pacientes en proceso de readaptación deportiva tras sufrir
 
 ---
 
-## Instalación y ejecución (Entorno virtual)
-
-1. Crear entorno virtual
+## Instalación y ejecución
 
 ```bash
-# Linux / Mac
-python3 -m venv venv
-source venv/bin/activate
-```
+git clone https://github.com/hum1-ua/Jump_Analyzer.git
+cd Jump_Analyzer
 
-```bash
-# Windows
+# Crear entorno virtual
 python -m venv venv
+# Windows
 venv\Scripts\activate
-```
+# Linux / macOS
+source venv/bin/activate
 
-2. Instalar dependencias
-
-```bash
+# Instalar dependencias
 pip install -r requirements.txt
-```
 
-3. Descargar modelos
-
-```bash
+# Descargar modelos (si no están incluidos)
 python download_models.py
-```
 
-4. Ejecutar la aplicación
-
-```bash
+# Ejecutar la aplicación
 python main.py
 ```
+---
+
+# Interpretación de resultados
+
+La app muestra:
+
+- Altura de salto con pierna izquierda
+
+- Altura de salto con pierna derecha
+
+- Diferencia porcentual
+
+Evaluación del riesgo:
+
+Diferencia	Interpretación
+< 10%	Simetría adecuada, sin riesgo significativo
+≥ 10%	Riesgo de compensación — seguir trabajando la pierna débil
